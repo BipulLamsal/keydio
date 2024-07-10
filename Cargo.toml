@@ -1,0 +1,11 @@
+[package]
+name = "keydio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+device_query = "2.1.0"
+cpal =  "0.15.3"
+audrey = "0.3"
+anyhow = "1.0.86"
+
