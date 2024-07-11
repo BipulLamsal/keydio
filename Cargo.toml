@@ -7,5 +7,6 @@ edition = "2021"
 device_query = "2.1.0"
 cpal =  "0.15.3"
 audrey = "0.3"
+rodio = "0.19.0"
 anyhow = "1.0.86"
 
