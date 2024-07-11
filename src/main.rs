@@ -1,5 +1,6 @@
 use anyhow::Result;
 use device_query::{DeviceEvents, DeviceState, Keycode};
+use rand::seq::SliceRandom;
 use rodio::{source::Source, Decoder, OutputStream, OutputStreamHandle};
 use std::{
     fs::File,
@@ -36,21 +37,25 @@ enum SoundType {
     Generic,
     Space,
 }
+
 #[derive(Clone, Debug, PartialEq)]
 enum KeyPressType {
     Press,
     Release,
 }
+
 #[derive(Clone, Debug, PartialEq)]
 struct KeyboardButtonSound {
     sound_type: SoundType,
     data: Vec<u8>,
 }
+
 impl KeyboardButtonSound {
     fn new(sound_type: SoundType, data: Vec<u8>) -> Self {
         Self { sound_type, data }
     }
 }
+
 struct AppState {
     theme: Theme,
     audio_press: Vec<KeyboardButtonSound>,
@@ -77,6 +82,7 @@ impl AppState {
             }
         }
     }
+
     fn load_audio_on_memory(
         &mut self,
         audio: &(&str, SoundType),
@@ -103,14 +109,19 @@ impl AppState {
         }
         Ok(())
     }
+
     fn get_audio_data(&self, keypress: &(KeyPressType, SoundType)) -> Option<Vec<u8>> {
         let sounds = match keypress.0 {
             KeyPressType::Press => &self.audio_press,
             KeyPressType::Release => &self.audio_release,
         };
-        sounds
+        let filtered_sound: Vec<_> = sounds
             .iter()
-            .find(|item| item.sound_type == keypress.1)
+            .filter(|item| item.sound_type == keypress.1)
+            .collect();
+        let mut rng = rand::thread_rng();
+        filtered_sound
+            .choose(&mut rng)
             .map(|item| item.data.clone())
     }
 }
